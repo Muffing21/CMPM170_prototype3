@@ -1,9 +1,9 @@
 
 class GridCell {
-    constructor(scene, texture) {
+    constructor(scene, x, y, texture) {
         this.sprite = scene.add.sprite(0, 0, texture)
         .setOrigin(0, 0)
-        .setScale(1);
+        .setScale(0.4, 0.2);
     }
 
 }
@@ -93,7 +93,6 @@ class PrototypeScene extends Phaser.Scene {
         for (let i = 0; i < gridSizeX; i++) {
             grid[i] = [];
             for (let j = 0; j < gridSizeY; j++) {
-                // Create a new GridCell for each grid cell
                 grid[i][j] = new GridCell(this, i * 80, j * 60, 'tile');
             }
         }
