@@ -1,20 +1,30 @@
 
 class GridCell {
     constructor(scene, x, y, texture) {
-        this.sprite = scene.add.sprite(0, 0, texture)
+        this.sprite = scene.add.sprite(x, y, texture)
         .setOrigin(0, 0)
         .setScale(0.4, 0.2);
+        this.hasLandMine = false;
     }
 
+    addLandMine() {
+        this.hasLandMine = true;
+        this.sprite.setTint(0xFF0000);    
+    }
+
+    explode(){
+        
+    }
 }
 
 class Player {
-    gridSizeX = 10;
-    gridSizeY = 8;
-    constructor(scene, x, y) {
+    constructor(scene, x, y, gridSizeX, gridSizeY) {
         this.sprite = scene.add.sprite(x, y, 'temp_player');
         this.sprite.setOrigin(0, 0);
         this.currentCell = { x: 0, y: 0 };
+        this.gridSizeX = gridSizeX;
+        this.gridSizeY = gridSizeY;
+        this.scene = scene;
         scene.input.keyboard.on('keydown', this.handleKeyDown, this);
     }
 
@@ -43,8 +53,7 @@ class Player {
     }
 
     moveRight() {
-        const gridSizeX = 10;
-        if (this.currentCell.x < gridSizeX - 1) {
+        if (this.currentCell.x < this.gridSizeX - 1) {
             this.currentCell.x++;
             this.updatePosition();
         }
@@ -58,8 +67,7 @@ class Player {
     }
 
     moveDown() {
-        const gridSizeY = 8
-        if (this.currentCell.y < gridSizeY - 1) {
+        if (this.currentCell.y < this.gridSizeY - 1) {
             this.currentCell.y++;
             this.updatePosition();
         }
@@ -70,6 +78,13 @@ class Player {
         const cellSizeY = 60;
         this.sprite.x = this.currentCell.x * cellSizeX;
         this.sprite.y = this.currentCell.y * cellSizeY;
+    }
+
+    checkCollision() {
+        const currentCell = grid[this.currentCell.x][this.currentCell.y];
+        if (currentCell.hasLandmine) {
+            alert('You stepped on a landmine.');
+        }
     }
 }
 
@@ -85,8 +100,9 @@ class PrototypeScene extends Phaser.Scene {
     create() {
         const gridSizeX = 10;
         const gridSizeY = 8;
-
-        const player = new Player(this, 0, 0);
+        let soulCounter = 0;
+        this.add.text(0, 550, `👻💀 Collection: ${soulCounter}`);
+        
 
         // Create a 2D array to represent the grid
         const grid = [];
@@ -105,12 +121,24 @@ class PrototypeScene extends Phaser.Scene {
             x: 0,
             y: 0
         });
+
+        placeLandMines(grid, gridSizeX, gridSizeY, 15);
         
+        const player = new Player(this, 0, 0, gridSizeX, gridSizeY);
+
     }
 
     update() {
         
+        
+    }
+}
 
+function placeLandMines(grid, gridSizeX, gridSizeY, numLandmines) {
+    for (let i = 0; i < numLandmines; i++) {
+        const randomX = Phaser.Math.Between(1, gridSizeX - 1);
+        const randomY = Phaser.Math.Between(1, gridSizeY - 1);
+        grid[randomX][randomY].addLandMine();
     }
 }
 
@@ -122,7 +150,7 @@ let gameConfig = {
        height: 600
     },
     physics: {
-       default: 'arcade', // Change this to Ninja or P2 you find that either is a better fit
+       default: 'arcade', 
        arcade: {
 
        }
