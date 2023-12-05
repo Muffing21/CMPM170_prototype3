@@ -5,15 +5,27 @@ class GridCell {
         .setOrigin(0, 0)
         .setScale(0.4, 0.2);
         this.hasLandMine = false;
+        this.hasTreasure = false;
     }
 
     addLandMine() {
+        this.sprite.setTint(0xFF0000);
         this.hasLandMine = true;
-        this.sprite.setTint(0xFF0000);    
     }
 
     explode(){
         
+        this.hasLandMine = false;    
+    }
+
+    addTreasure(){
+        this.sprite.setTint(0x0000FF);
+        this.hasTreasure = true;
+    }
+
+    gotTreasure(){
+        // this.sprite.setTint(0xFF0000);
+        this.hasLandMine = false;
     }
 
     toString() {
@@ -54,6 +66,7 @@ class Player {
             this.currentCell.x--;
             this.updatePosition();
             this.checkCollision();
+            this.checkCollisionTreasure();
         }
     }
 
@@ -62,6 +75,7 @@ class Player {
             this.currentCell.x++;
             this.updatePosition();
             this.checkCollision();
+            this.checkCollisionTreasure();
         }
     }
 
@@ -70,6 +84,7 @@ class Player {
             this.currentCell.y--;
             this.updatePosition();
             this.checkCollision();
+            this.checkCollisionTreasure();
         }
     }
 
@@ -78,6 +93,7 @@ class Player {
             this.currentCell.y++;
             this.updatePosition();
             this.checkCollision();
+            this.checkCollisionTreasure();
         }
     }
 
@@ -91,9 +107,20 @@ class Player {
     checkCollision() {
         const currentCell = this.scene.grid[this.currentCell.x][this.currentCell.y];
         console.log(`On cell (${this.currentCell.x}, ${this.currentCell.y})\nCell info: ${currentCell}`);
-        if (currentCell.hasLandmine == true) {
+        if (currentCell.hasLandMine) {
             console.log('You stepped on a landmine.');
             this.scene.soulCounter++;
+            currentCell.explode();
+            this.currentCell = {x:0, y:0};
+            this.updatePosition();
+            this.scene.soulText.setText(`👻Soul Collection💀: ${this.scene.soulCounter}`); 
+        }
+    }
+    checkCollisionTreasure(){
+        const currentCell = this.scene.grid[this.currentCell.x][this.currentCell.y];
+        if(currentCell.hasTreasure){
+            console.log('you found the treasure');
+            currentCell.gotTreasure();
         }
     }
 }
@@ -115,7 +142,7 @@ class PrototypeScene extends Phaser.Scene {
 
     create() {
         
-        this.add.text(0, 550, `👻💀 Collection: ${this.soulCounter}`);
+        this.soulText = this.add.text(0, 550, `👻Soul Collection💀: ${this.soulCounter}`);
         
 
         // Create a 2D array to represent the grid
@@ -136,7 +163,8 @@ class PrototypeScene extends Phaser.Scene {
             y: 0
         });
 
-        placeLandMines(this.grid, gridSizeX, gridSizeY, 15);
+        placeLandMines(this.grid, gridSizeX, gridSizeY, 20);
+        placeTreasure(this.grid, gridSizeX, gridSizeY);
         this.player = new Player(this, 0, 0, gridSizeX, gridSizeY);
     }
 
@@ -151,6 +179,16 @@ function placeLandMines(grid, gridSizeX, gridSizeY, numLandmines) {
         const randomY = Phaser.Math.Between(1, gridSizeY - 1);
         grid[randomX][randomY].addLandMine();
     }
+}
+
+function placeTreasure(grid, gridSizeX, gridSizeY){
+    let randomX;
+    let randomY;
+    do {
+        randomX = Phaser.Math.Between(5, gridSizeX - 1);
+        randomY = Phaser.Math.Between(5, gridSizeY - 1);
+    } while(grid[randomX][randomY].hasLandMine);
+    grid[randomX][randomY].addTreasure;
 }
 
 let gameConfig = {
