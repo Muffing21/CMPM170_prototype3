@@ -15,6 +15,10 @@ class GridCell {
     explode(){
         
     }
+
+    toString() {
+        return `hasLandMine = ${this.hasLandMine}`;
+    }
 }
 
 class Player {
@@ -49,6 +53,7 @@ class Player {
         if (this.currentCell.x > 0) {
             this.currentCell.x--;
             this.updatePosition();
+            this.checkCollision();
         }
     }
 
@@ -56,6 +61,7 @@ class Player {
         if (this.currentCell.x < this.gridSizeX - 1) {
             this.currentCell.x++;
             this.updatePosition();
+            this.checkCollision();
         }
     }
 
@@ -63,6 +69,7 @@ class Player {
         if (this.currentCell.y > 0) {
             this.currentCell.y--;
             this.updatePosition();
+            this.checkCollision();
         }
     }
 
@@ -70,6 +77,7 @@ class Player {
         if (this.currentCell.y < this.gridSizeY - 1) {
             this.currentCell.y++;
             this.updatePosition();
+            this.checkCollision();
         }
     }
 
@@ -81,39 +89,45 @@ class Player {
     }
 
     checkCollision() {
-        const currentCell = grid[this.currentCell.x][this.currentCell.y];
-        if (currentCell.hasLandmine) {
-            alert('You stepped on a landmine.');
+        const currentCell = this.scene.grid[this.currentCell.x][this.currentCell.y];
+        console.log(`On cell (${this.currentCell.x}, ${this.currentCell.y})\nCell info: ${currentCell}`);
+        if (currentCell.hasLandmine == true) {
+            console.log('You stepped on a landmine.');
+            this.scene.soulCounter++;
         }
     }
 }
 
+const gridSizeX = 10;
+const gridSizeY = 8;
+
 class PrototypeScene extends Phaser.Scene {
+    constructor() {
+        super();
+        this.soulCounter = 0;
+    }
+
     preload() {
         this.load.path = 'assets/';
         this.load.image('temp_player', 'temp_player.png')
         this.load.image('tile', 'tile.png')
     }
 
-
-
     create() {
-        const gridSizeX = 10;
-        const gridSizeY = 8;
-        let soulCounter = 0;
-        this.add.text(0, 550, `👻💀 Collection: ${soulCounter}`);
+        
+        this.add.text(0, 550, `👻💀 Collection: ${this.soulCounter}`);
         
 
         // Create a 2D array to represent the grid
-        const grid = [];
+        this.grid = [];
         for (let i = 0; i < gridSizeX; i++) {
-            grid[i] = [];
+            this.grid[i] = [];
             for (let j = 0; j < gridSizeY; j++) {
-                grid[i][j] = new GridCell(this, i * 80, j * 60, 'tile');
+                this.grid[i][j] = new GridCell(this, i * 80, j * 60, 'tile');
             }
         }
 
-        Phaser.Actions.GridAlign(grid.flat(), {
+        Phaser.Actions.GridAlign(this.grid.flat(), {
             width: gridSizeX,
             height: gridSizeY,
             cellWidth: 80,
@@ -122,14 +136,11 @@ class PrototypeScene extends Phaser.Scene {
             y: 0
         });
 
-        placeLandMines(grid, gridSizeX, gridSizeY, 15);
-        
-        const player = new Player(this, 0, 0, gridSizeX, gridSizeY);
-
+        placeLandMines(this.grid, gridSizeX, gridSizeY, 15);
+        this.player = new Player(this, 0, 0, gridSizeX, gridSizeY);
     }
 
     update() {
-        
         
     }
 }
