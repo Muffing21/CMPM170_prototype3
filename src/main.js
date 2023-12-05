@@ -1,3 +1,8 @@
+//notes for team
+// implement "dig" mechanic
+// you can 
+
+
 
 class GridCell {
     constructor(scene, x, y, texture) {
@@ -19,13 +24,13 @@ class GridCell {
     }
 
     addTreasure(){
-        this.sprite.setTint(0x0000FF);
+        this.sprite.setTint(0xFFFF00);
         this.hasTreasure = true;
     }
 
     gotTreasure(){
         // this.sprite.setTint(0xFF0000);
-        this.hasLandMine = false;
+        this.hasTreasure = false;
     }
 
     toString() {
@@ -121,6 +126,7 @@ class Player {
         if(currentCell.hasTreasure){
             console.log('you found the treasure');
             currentCell.gotTreasure();
+            //add more game logic here
         }
     }
 }
@@ -138,11 +144,15 @@ class PrototypeScene extends Phaser.Scene {
         this.load.path = 'assets/';
         this.load.image('temp_player', 'temp_player.png')
         this.load.image('tile', 'tile.png')
+        //image by Eva Brozini pexels.com
+        this.load.image('shrine', 'shrine.jpg')
+
     }
 
     create() {
         
         this.soulText = this.add.text(0, 550, `👻Soul Collection💀: ${this.soulCounter}`);
+        
         
 
         // Create a 2D array to represent the grid
@@ -185,10 +195,11 @@ function placeTreasure(grid, gridSizeX, gridSizeY){
     let randomX;
     let randomY;
     do {
-        randomX = Phaser.Math.Between(5, gridSizeX - 1);
+        randomX = Phaser.Math.Between(1, gridSizeX - 1);
         randomY = Phaser.Math.Between(5, gridSizeY - 1);
     } while(grid[randomX][randomY].hasLandMine);
-    grid[randomX][randomY].addTreasure;
+    grid[randomX][randomY].addTreasure();
+    console.log(`treasure has been placed at: ${randomX},${randomY}`)
 }
 
 let gameConfig = {
