@@ -43,7 +43,7 @@ class GridCell {
         this.hasLandMine = false;
 
         this.neighborCoordinates.forEach((obj) => {
-            console.log(`Explosion hit (${obj.x}, ${obj.y})`);
+            // console.log(`Explosion hit (${obj.x}, ${obj.y})`);
             this.grid[obj.x][obj.y].reveal();
         });
 
@@ -76,8 +76,9 @@ class GridCell {
 
 class Player {
     constructor(scene, x, y, gridSizeX, gridSizeY) {
-        this.sprite = scene.add.sprite(x, y, 'temp_player');
+        this.sprite = scene.add.sprite(x, y, 'player');
         this.sprite.setOrigin(0, 0);
+        this.sprite.setScale(0.7, 0.35);
         this.currentCell = { x: 0, y: 0 };
         this.gridSizeX = gridSizeX;
         this.gridSizeY = gridSizeY;
@@ -142,7 +143,7 @@ class Player {
     }
 
     purchaseReveal() {
-        if(this.scene.soulCounter >= 5){
+        if(this.scene.soulCounter >= 3){
             console.log('You made a purchase');
             this.scene.tweens.addCounter({
                 from: 0.4,
@@ -155,7 +156,7 @@ class Player {
                 treasureLocation.sprite.tint = Phaser.Display.Color.GetColor(intensity, intensity, intensity);
             });
 
-            this.scene.soulCounter -= 5;
+            this.scene.soulCounter -= 3;
             this.scene.soulText.setText(`👻Soul Collection💀: ${this.scene.soulCounter}`);
         }
     }
@@ -202,7 +203,6 @@ class PrototypeScene extends Phaser.Scene {
     constructor() {
         super("game");
         this.soulCounter = 0;
-        this.shrine;
     }
 
     preload() {
@@ -212,11 +212,12 @@ class PrototypeScene extends Phaser.Scene {
         //image by Eva Brozini pexels.com
         this.load.image('shrine', 'shrine.png');
         this.load.image('shrine2', 'shrine.png');
-
+        this.load.image('player', 'player.png')
     }
 
     create() {
         this.soulText = this.add.text(0, 550, `👻Soul Collection💀: ${this.soulCounter}`);
+        this.instruction = this.add.text(500, 550, "Press Q once you have\nenough souls to offer\nto the shrine");
 
         this.gameOverText = this.add.text(240, 120, "");
         this.gameOverText.visible = false;
@@ -239,7 +240,7 @@ class PrototypeScene extends Phaser.Scene {
             y: 0
         });
 
-        placeLandMines(this.grid, gridSizeX, gridSizeY, 18);
+        placeLandMines(this.grid, gridSizeX, gridSizeY, 15);
         placeTreasure(this.grid, gridSizeX, gridSizeY);
         
         this.player = new Player(this, 0, 0, gridSizeX, gridSizeY);
@@ -262,8 +263,10 @@ class PrototypeScene extends Phaser.Scene {
         const endTextVar = treasureFound ? "found" : "blew up";
         this.gameOverText.setText(`You ${endTextVar} the treasure!`);
         this.gameOverText.visible = true;
-
+        this.soulCounter = 0;
         this.soulText.visible = false;
+        this.shrine.sprite.visible = false;
+        this.instruction.visible = false;
 
         this.time.delayedCall(3000, () => {this.scene.start("game")});
     }
@@ -286,7 +289,7 @@ function placeTreasure(grid, gridSizeX, gridSizeY){
     } while(grid[randomX][randomY].hasLandMine);
     treasureLocation = grid[randomX][randomY];
     grid[randomX][randomY].addTreasure();
-    console.log(`treasure has been placed at: ${randomX},${randomY}`);
+    // console.log(`treasure has been placed at: ${randomX},${randomY}`);
 }
     
 
