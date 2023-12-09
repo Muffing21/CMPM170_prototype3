@@ -159,7 +159,7 @@ class Player {
             });
 
             this.scene.soulCounter -= 3;
-            this.scene.soulText.setText(`👻Soul Collection💀: ${this.scene.soulCounter}`);
+            this.scene.soulCountText.setText(`${this.scene.soulCounter}`);
         }
     }
 
@@ -178,7 +178,10 @@ class Player {
             currentCell.explode();
             this.currentCell = {x:0, y:0};
             this.updatePosition();
-            this.scene.soulText.setText(`👻Soul Collection💀: ${this.scene.soulCounter}`); 
+            
+            const color = this.scene.soulCounter >= 3 ? "#FF0F0F" : "#FFFFFF";
+            this.scene.soulCountText.setColor(color);
+            this.scene.soulCountText.setText(`${this.scene.soulCounter}`);
         }
     }
 
@@ -220,7 +223,8 @@ class PrototypeScene extends Phaser.Scene {
     }
 
     create() {
-        this.soulText = this.add.text(0, 550, `👻Soul Collection💀: ${this.soulCounter}`);
+        this.soulText = this.add.text(0, 550, `👻Soul Collection💀:`);
+        this.soulCountText = this.add.text(200, 550, `${this.soulCounter}`);
         this.instruction = this.add.text(500, 550, "Press Q once you have\nenough souls to offer\nto the shrine");
 
         this.gameOverText = this.add.text(240, 120, "");
@@ -269,6 +273,7 @@ class PrototypeScene extends Phaser.Scene {
         this.gameOverText.visible = true;
         this.soulCounter = 0;
         this.soulText.visible = false;
+        this.soulCountText.visible = false;
         this.shrine.sprite.visible = false;
         this.instruction.visible = false;
 
