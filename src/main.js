@@ -40,6 +40,8 @@ class GridCell {
     }
 
     explode(){
+        this.scene.sound.play('explode');
+
         this.hasLandMine = false;
 
         this.neighborCoordinates.forEach((obj) => {
@@ -212,7 +214,9 @@ class PrototypeScene extends Phaser.Scene {
         //image by Eva Brozini pexels.com
         this.load.image('shrine', 'shrine.png');
         this.load.image('shrine2', 'shrine.png');
-        this.load.image('player', 'player.png')
+        this.load.image('player', 'player.png');
+
+        this.load.audio('explode', 'Explosion2.wav');
     }
 
     create() {
@@ -291,8 +295,6 @@ function placeTreasure(grid, gridSizeX, gridSizeY){
     grid[randomX][randomY].addTreasure();
     // console.log(`treasure has been placed at: ${randomX},${randomY}`);
 }
-    
-
 
 let gameConfig = {
     scale: {
