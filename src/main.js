@@ -196,10 +196,6 @@ class Shrine {
     
 }
 
-
-const gridSizeX = 10;
-const gridSizeY = 8;
-
 let treasureLocation;
 
 class PrototypeScene extends Phaser.Scene {
@@ -271,9 +267,6 @@ class PrototypeScene extends Phaser.Scene {
 
         this.time.delayedCall(3000, () => {this.scene.start("game")});
     }
-=======
-    
->>>>>>> Harry
 }
 
 function placeLandMines(grid, gridSizeX, gridSizeY, numLandmines) {
