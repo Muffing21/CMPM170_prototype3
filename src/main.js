@@ -71,6 +71,7 @@ class GridCell {
     toString() {
         return `hasLandMine = ${this.hasLandMine}`;
     }
+    
 }
 
 class Player {
@@ -97,6 +98,9 @@ class Player {
                 break;
             case 'ArrowDown':
                 this.moveDown();
+                break;
+            case 'KeyQ':
+                this.purchaseReveal();
                 break;
         }
     }
@@ -137,6 +141,25 @@ class Player {
         }
     }
 
+    purchaseReveal() {
+        if(this.scene.soulCounter >= 5){
+            console.log('You made a purchase');
+            this.scene.tweens.addCounter({
+                from: 0.4,
+                to: 1,
+                duration: 1000,
+                yoyo: true,
+                repeat: -1
+            }).setCallback("onUpdate", (tween) => {
+                let intensity = 255 * tween.getValue();
+                treasureLocation.sprite.tint = Phaser.Display.Color.GetColor(intensity, intensity, intensity);
+            });
+
+            this.scene.soulCounter -= 5;
+            this.scene.soulText.setText(`👻Soul Collection💀: ${this.scene.soulCounter}`);
+        }
+    }
+
     updatePosition() {
         const cellSizeX = 80;
         const cellSizeY = 60;
@@ -161,23 +184,38 @@ class Player {
         if(currentCell.hasTreasure){
             console.log('you found the treasure');
             currentCell.gotTreasure();
-            //add more game logic here
         }
     }
 }
+
+class Shrine {
+    constructor(scene, x, y, img){
+        this.sprite = scene.add.sprite(x, y, img)
+        .setScale(1);
+    }
+    
+}
+
+
+const gridSizeX = 10;
+const gridSizeY = 8;
+
+let treasureLocation;
 
 class PrototypeScene extends Phaser.Scene {
     constructor() {
         super("game");
         this.soulCounter = 0;
+        this.shrine;
     }
 
     preload() {
         this.load.path = 'assets/';
-        this.load.image('temp_player', 'temp_player.png')
-        this.load.image('tile', 'tile.png')
+        this.load.image('temp_player', 'temp_player.png');
+        this.load.image('tile', 'tile.png');
         //image by Eva Brozini pexels.com
-        this.load.image('shrine', 'shrine.jpg')
+        this.load.image('shrine', 'shrine.png');
+        this.load.image('shrine2', 'shrine.png');
 
     }
 
@@ -205,9 +243,11 @@ class PrototypeScene extends Phaser.Scene {
             y: 0
         });
 
-        placeLandMines(this.grid, gridSizeX, gridSizeY, 20);
+        placeLandMines(this.grid, gridSizeX, gridSizeY, 18);
         placeTreasure(this.grid, gridSizeX, gridSizeY);
+        
         this.player = new Player(this, 0, 0, gridSizeX, gridSizeY);
+        this.shrine = new Shrine(this, gameConfig.scale.width/2, 550, 'shrine');
     }
 
     update() {
@@ -231,6 +271,9 @@ class PrototypeScene extends Phaser.Scene {
 
         this.time.delayedCall(3000, () => {this.scene.start("game")});
     }
+=======
+    
+>>>>>>> Harry
 }
 
 function placeLandMines(grid, gridSizeX, gridSizeY, numLandmines) {
@@ -248,9 +291,12 @@ function placeTreasure(grid, gridSizeX, gridSizeY){
         randomX = Phaser.Math.Between(1, gridSizeX - 1);
         randomY = Phaser.Math.Between(5, gridSizeY - 1);
     } while(grid[randomX][randomY].hasLandMine);
+    treasureLocation = grid[randomX][randomY];
     grid[randomX][randomY].addTreasure();
-    console.log(`treasure has been placed at: ${randomX},${randomY}`)
+    console.log(`treasure has been placed at: ${randomX},${randomY}`);
 }
+    
+
 
 let gameConfig = {
     scale: {
@@ -266,7 +312,7 @@ let gameConfig = {
        }
     },
     pixelArt: true,
-    backgroundColor: '#79a7c9',
+    backgroundColor: '#2A2A2A',
     scene: PrototypeScene,
     title: "CMPM 170 Prototype 3"
 };
