@@ -159,6 +159,9 @@ class Player {
             });
 
             this.scene.soulCounter -= 3;
+
+            const color = this.scene.soulCounter >= 3 ? "#FF0F0F" : "#FFFFFF";
+            this.scene.soulCountText.setColor(color);
             this.scene.soulCountText.setText(`${this.scene.soulCounter}`);
         }
     }
